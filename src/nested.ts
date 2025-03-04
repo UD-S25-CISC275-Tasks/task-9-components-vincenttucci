@@ -6,7 +6,7 @@ import { Question, QuestionType } from "./interfaces/question";
  * that are `published`.
  */
 export function getPublishedQuestions(questions: Question[]): Question[] {
-    return [];
+    return questions.filter((question) => question.published);
 }
 
 /**
@@ -15,7 +15,17 @@ export function getPublishedQuestions(questions: Question[]): Question[] {
  * `expected`, and an empty array for its `options`.
  */
 export function getNonEmptyQuestions(questions: Question[]): Question[] {
-    return [];
+    return questions.filter((question) => {
+        if (
+            question.body !== "" ||
+            question.expected !== "" ||
+            question.options.length > 0
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    });
 }
 
 /***
@@ -24,9 +34,10 @@ export function getNonEmptyQuestions(questions: Question[]): Question[] {
  */
 export function findQuestion(
     questions: Question[],
-    id: number
+    id: number,
 ): Question | null {
-    return null;
+    const found = questions.find((question) => question.id === id);
+    return found ? found : null;
 }
 
 /**
@@ -34,7 +45,7 @@ export function findQuestion(
  * with the given `id`.
  */
 export function removeQuestion(questions: Question[], id: number): Question[] {
-    return [];
+    return questions.filter((question) => question.id !== id);
 }
 
 /***
@@ -42,21 +53,30 @@ export function removeQuestion(questions: Question[], id: number): Question[] {
  * questions, as an array.
  */
 export function getNames(questions: Question[]): string[] {
-    return [];
+    return questions.map((question) => question.name);
 }
 
 /***
  * Consumes an array of questions and returns the sum total of all their points added together.
  */
 export function sumPoints(questions: Question[]): number {
-    return 0;
+    return questions.reduce(
+        (totalPoints, currentQuestion) => totalPoints + currentQuestion.points,
+        0,
+    ); //used Google search AI to explain the order of values in the reduce function and that the zero at the end represents the initial value of the accumulator
 }
 
 /***
  * Consumes an array of questions and returns the sum total of the PUBLISHED questions.
  */
 export function sumPublishedPoints(questions: Question[]): number {
-    return 0;
+    const publishedQuestionz = questions.filter(
+        (question) => question.published,
+    );
+    return publishedQuestionz.reduce(
+        (total, question) => total + question.points,
+        0,
+    );
 }
 
 /***
@@ -77,7 +97,15 @@ id,name,options,points,published
  * Check the unit tests for more examples!
  */
 export function toCSV(questions: Question[]): string {
-    return "";
+    const headers = "id,name,options,points,published";
+    const q = questions
+        .map(
+            (question: Question): string =>
+                `${question.id},${question.name},${question.options.length},${question.points},${question.published}`,
+        )
+        .join("\n");
+
+    return `${headers}\n${q}`;
 }
 
 /**
@@ -86,7 +114,12 @@ export function toCSV(questions: Question[]): string {
  * making the `text` an empty string, and using false for both `submitted` and `correct`.
  */
 export function makeAnswers(questions: Question[]): Answer[] {
-    return [];
+    return questions.map((question) => ({
+        questionId: question.id,
+        text: "",
+        submitted: false,
+        correct: false,
+    }));
 }
 
 /***
@@ -94,7 +127,7 @@ export function makeAnswers(questions: Question[]): Answer[] {
  * each question is now published, regardless of its previous published status.
  */
 export function publishAll(questions: Question[]): Question[] {
-    return [];
+    return questions.map((question) => ({ ...question, published: true }));
 }
 
 /***
@@ -102,7 +135,12 @@ export function publishAll(questions: Question[]): Question[] {
  * are the same type. They can be any type, as long as they are all the SAME type.
  */
 export function sameType(questions: Question[]): boolean {
-    return false;
+    if (questions.length === 0) {
+        return true;
+    } else {
+        const first = questions[0].type;
+        return questions.every((question) => question.type === first);
+    }
 }
 
 /***
@@ -110,13 +148,30 @@ export function sameType(questions: Question[]): boolean {
  * except that a blank question has been added onto the end. Reuse the `makeBlankQuestion`
  * you defined in the `objects.ts` file.
  */
+export function makeBlankQuestion(
+    id: number,
+    name: string,
+    type: QuestionType,
+): Question {
+    return {
+        id,
+        name,
+        type,
+        body: "",
+        expected: "",
+        options: [],
+        points: 1,
+        published: false,
+    };
+}
+
 export function addNewQuestion(
     questions: Question[],
     id: number,
     name: string,
-    type: QuestionType
+    type: QuestionType,
 ): Question[] {
-    return [];
+    return [...questions, makeBlankQuestion(id, name, type)];
 }
 
 /***
@@ -127,9 +182,18 @@ export function addNewQuestion(
 export function renameQuestionById(
     questions: Question[],
     targetId: number,
-    newName: string
+    newName: string,
 ): Question[] {
-    return [];
+    return questions.map((question) => {
+        if (question.id === targetId) {
+            return {
+                ...question,
+                name: newName,
+            };
+        } else {
+            return question;
+        }
+    });
 }
 
 /***
@@ -142,9 +206,21 @@ export function renameQuestionById(
 export function changeQuestionTypeById(
     questions: Question[],
     targetId: number,
-    newQuestionType: QuestionType
+    newQuestionType: QuestionType,
 ): Question[] {
-    return [];
+    return questions.map((question) => {
+        if (question.id === targetId) {
+            let newQuestion = { ...question, type: newQuestionType };
+
+            if (newQuestionType !== "multiple_choice_question") {
+                newQuestion.options = [];
+            }
+
+            return newQuestion;
+        } else {
+            return question;
+        }
+    });
 }
 
 /**
@@ -161,9 +237,29 @@ export function editOption(
     questions: Question[],
     targetId: number,
     targetOptionIndex: number,
-    newOption: string
+    newOption: string,
 ): Question[] {
-    return [];
+    //used Google Gemini AI to explain the question further and how to meet requirements
+    return questions.map((question) => {
+        if (question.id !== targetId) {
+            return question;
+        }
+
+        let newOptions;
+        if (targetOptionIndex === -1) {
+            newOptions = [...question.options, newOption]; //used Gemini to help explain how to add new option to the end of the list
+        } else {
+            newOptions = question.options.map((option, index) => {
+                // Creates a new array, replacing the option at targetOptionIndex
+                if (index === targetOptionIndex) {
+                    return newOption;
+                }
+                return option;
+            });
+        }
+
+        return { ...question, options: newOptions };
+    });
 }
 
 /***
@@ -172,10 +268,30 @@ export function editOption(
  * the duplicate inserted directly after the original question. Use the `duplicateQuestion`
  * function you defined previously; the `newId` is the parameter to use for the duplicate's ID.
  */
+
+export function duplicateQuestion(id: number, oldQuestion: Question): Question {
+    return {
+        ...oldQuestion,
+        id, //used gemini to explain that I need to create a new ID for the question copy. ID must be unique even to the copy.
+        name: "Copy of " + oldQuestion.name,
+        published: false,
+    };
+}
 export function duplicateQuestionInArray(
     questions: Question[],
     targetId: number,
-    newId: number
+    newId: number,
 ): Question[] {
-    return [];
+    const index = questions.findIndex((question) => question.id === targetId);
+    const oldQuestion = questions[index];
+    const duplicatedQuestion = duplicateQuestion(newId, oldQuestion);
+    if (index === -1) {
+        return questions;
+    } else {
+        return [
+            ...questions.slice(0, index + 1), //used Google AI to reference slice documentation to refresh on start and end points
+            duplicatedQuestion,
+            ...questions.slice(index + 1),
+        ];
+    }
 }
