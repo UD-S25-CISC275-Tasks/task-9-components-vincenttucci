@@ -22,10 +22,21 @@
 >>>
 >>
 
+=======
+
+>>>>>>> origin/task-components
+>>>>>>>
+>>>>>>
+>>>>>
+>>>>
+>>>
+>>
+
 # React TypeScript Tome Tasks
 
 Hello! This repository has been pre-configured with eslint, prettier, and a github actions workflow to automatically lint and format your code on every push. It'll also deploy your site for you.
 
+<<<<<<< HEAD
 You'll complete programming problems by merging in upstream branches. Check out the textbook for more information: [https://frontend-fun.github.io/react-hooks-typescript-tome/](https://frontend-fun.github.io/react-hooks-typescript-tome/)
 ==============================================================================================================================================================================
 
@@ -49,6 +60,17 @@ Back in this repository, go to `settings` -> `secrets` -> `Actions` and click th
 Name the secret "GH_TOKEN" and paste in the token you copied in the previous step.
 
 >>>>>>> origin/task-state
+>>>>>>>
+>>>>>>
+>>>>>
+>>>>
+>>>
+>>
+
+=======
+You'll complete programming problems by merging in upstream branches. Check out the textbook for more information: [https://frontend-fun.github.io/react-hooks-typescript-tome/](https://frontend-fun.github.io/react-hooks-typescript-tome/)
+
+>>>>>>> origin/task-components
 >>>>>>>
 >>>>>>
 >>>>>
