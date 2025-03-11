@@ -8,9 +8,18 @@ import { Question, QuestionType } from "./interfaces/question";
 export function makeBlankQuestion(
     id: number,
     name: string,
-    type: QuestionType
+    type: QuestionType,
 ): Question {
-    return {};
+    return {
+        id,
+        name,
+        type,
+        body: "",
+        expected: "",
+        options: [],
+        points: 1,
+        published: false,
+    };
 }
 
 /**
@@ -21,7 +30,9 @@ export function makeBlankQuestion(
  * HINT: Look up the `trim` and `toLowerCase` functions.
  */
 export function isCorrect(question: Question, answer: string): boolean {
-    return false;
+    return (
+        answer.trim().toLowerCase() === question.expected.trim().toLowerCase()
+    );
 }
 
 /**
@@ -31,7 +42,10 @@ export function isCorrect(question: Question, answer: string): boolean {
  * be exactly one of the options.
  */
 export function isValid(question: Question, answer: string): boolean {
-    return false;
+    if (question.type === "multiple_choice_question") {
+        return question.options.includes(answer);
+    }
+    return true;
 }
 
 /**
@@ -41,7 +55,7 @@ export function isValid(question: Question, answer: string): boolean {
  * name "My First Question" would become "9: My First Q".
  */
 export function toShortForm(question: Question): string {
-    return "";
+    return question.id + ": " + question.name.substring(0, 10);
 }
 
 /**
@@ -62,7 +76,22 @@ export function toShortForm(question: Question): string {
  * Check the unit tests for more examples of what this looks like!
  */
 export function toMarkdown(question: Question): string {
-    return "";
+    let output = "# " + question.name + "\n" + question.body;
+    /*
+     *  I used google gemini here to help explain the question to
+     *  me and how I could go about formatting the output.
+     *
+     * The program checks if the question is multiple choice
+     * and outputs the options below, but if its not
+     * multiple choice it just outputs the body of the question.
+     *
+     */
+    if (question.type === "multiple_choice_question") {
+        for (let i = 0; i < question.options.length; i++) {
+            output += "\n- " + question.options[i];
+        }
+    }
+    return output;
 }
 
 /**
@@ -70,7 +99,7 @@ export function toMarkdown(question: Question): string {
  * `newName`.
  */
 export function renameQuestion(question: Question, newName: string): Question {
-    return question;
+    return { ...question, name: newName };
 }
 
 /**
@@ -79,7 +108,7 @@ export function renameQuestion(question: Question, newName: string): Question {
  * published; if it was published, now it should be not published.
  */
 export function publishQuestion(question: Question): Question {
-    return question;
+    return { ...question, published: question.published ? false : true };
 }
 
 /**
@@ -89,7 +118,12 @@ export function publishQuestion(question: Question): Question {
  * The `published` field should be reset to false.
  */
 export function duplicateQuestion(id: number, oldQuestion: Question): Question {
-    return oldQuestion;
+    return {
+        ...oldQuestion,
+        id, //used gemini to explain that I need to create a new ID for the question copy. ID must be unique even to the copy.
+        name: "Copy of " + oldQuestion.name,
+        published: false,
+    };
 }
 
 /**
@@ -100,7 +134,10 @@ export function duplicateQuestion(id: number, oldQuestion: Question): Question {
  * Check out the subsection about "Nested Fields" for more information.
  */
 export function addOption(question: Question, newOption: string): Question {
-    return question;
+    return {
+        ...question,
+        options: [...question.options, newOption],
+    };
 }
 
 /**
@@ -115,7 +152,13 @@ export function mergeQuestion(
     id: number,
     name: string,
     contentQuestion: Question,
-    { points }: { points: number }
+    { points }: { points: number },
 ): Question {
-    return contentQuestion;
+    return {
+        ...contentQuestion,
+        id,
+        name,
+        points,
+        published: false,
+    };
 }
