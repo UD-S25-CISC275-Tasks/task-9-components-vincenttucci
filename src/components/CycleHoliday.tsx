@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Button } from "react-bootstrap";
 
-<<<<<<< HEAD
 const holidays = ["🎄", "🎃", "🦃", "🦅", "🍀"]; // Used Google AI search to get emojis for holidays
 const sortedHolidays = [...holidays].sort();
 
@@ -29,8 +28,3 @@ export function CycleHoliday(): React.JSX.Element {
         </div>
     );
 }
-=======
-export function CycleHoliday(): React.JSX.Element {
-    return <div>Cycle Holiday</div>;
-}
->>>>>>> origin/task-components

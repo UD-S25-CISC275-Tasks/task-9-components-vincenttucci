@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Button } from "react-bootstrap";
 
 export function RevealAnswer(): React.JSX.Element {
-<<<<<<< HEAD
     const [visible, visibleSet] = useState<boolean>(false);
 
     return (
@@ -18,7 +17,3 @@ export function RevealAnswer(): React.JSX.Element {
         </div>
     );
 }
-=======
-    return <div>Reveal Answer</div>;
-}
->>>>>>> origin/task-components

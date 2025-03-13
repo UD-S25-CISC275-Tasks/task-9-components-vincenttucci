@@ -19,8 +19,14 @@ function ShoveBoxButton({
     );
 }
 
-function MoveableBox(): React.JSX.Element {
-    const [position, setPosition] = useState<number>(10);
+// used chat gpt to explain why setting position as a prop is necessary for updating marginLeft, since it allows the componenet to reflect user input
+function MoveableBox({
+    position,
+    setPosition,
+}: {
+    position: number;
+    setPosition: (newPosition: number) => void;
+}): React.JSX.Element {
     return (
         <div
             data-testid="moveable-box"
@@ -38,19 +44,16 @@ function MoveableBox(): React.JSX.Element {
 }
 
 export function ShoveBox(): React.JSX.Element {
-    const box = MoveableBox();
+    const [position, setPosition] = useState<number>(10); //used chat gpt to understand the importance of setting a value here in order to show movement of button on clicks
 
     return (
         <div>
             <h3>Shove Box</h3>
-            {/* <span>The box is at: {box.position}</span>
+            <span>The box is at: {position}px</span>
             <div>
-                <ShoveBoxButton
-                    position={box.position}
-                    setPosition={box.setPosition}
-                ></ShoveBoxButton>
-                {box}
-            </div> */}
+                <ShoveBoxButton position={position} setPosition={setPosition} />
+                <MoveableBox position={position} setPosition={setPosition} />
+            </div>
         </div>
     );
 }

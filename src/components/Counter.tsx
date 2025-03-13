@@ -5,7 +5,6 @@ export function Counter(): React.JSX.Element {
     const [value, setValue] = useState<number>(0);
     return (
         <span>
-<<<<<<< HEAD
             <Button
                 onClick={() => {
                     setValue(1 + value);
@@ -17,10 +16,3 @@ export function Counter(): React.JSX.Element {
         </span>
     );
 }
-=======
-            <Button onClick={() => setValue(1 + value)}>Add One</Button>
-            to {value}.
-        </span>
-    );
-}
->>>>>>> origin/task-components
